@@ -1,0 +1,20 @@
+kubectl apply -f redis-deployment.yamlapiVersion: apps/v1
+kind: Deployment        # Тип ресурса: развертывание
+metadata:
+  name: redis-factory   # Имя нашего "начальника" над подами
+spec:
+  replicas: 1           # Сколько штук запустить (пока одна)
+  selector:
+    matchLabels:
+      app: redis        # Как K8s поймет, какими подами управлять
+  template:
+    metadata:
+      labels:
+        app: redis      # Метка, которую мы вешаем на Под
+    spec:
+      containers:
+      - name: redis
+        image: redis:7-alpine  # Тот самый образ и версия (тег)
+        ports:
+        - containerPort: 6379  # Порт ВНУТРИ пода
+        command: ["redis-server", "--save", "60", "1", "--loglevel", "warning"]
