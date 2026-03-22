@@ -1,26 +1,23 @@
-apiVersion: apps/v1             # Версия API, которую использует Kubernetes для деплойментов
-kind: Deployment                # Тип объекта: мы создаем "Развертывание" (управляет жизненным циклом подов)
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: ai-factory-app          # Уникальное системное имя твоего приложения в кластере
-spec:                           # Описание желаемого состояния (что мы хотим получить)
-  replicas: 1                   # Количество одинаковых копий приложения (реплик), которые должны работать
-  selector:                     # Правила, по которым Деплоймент находит "свои" поды
-    matchLabels:                # Искать поды, у которых есть...
-      app: factory-web          # ...вот такая метка (label)
-  template:                     # Шаблон (чертеж), по которому будут создаваться новые поды
+  name: ai-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-worker
+  template:
     metadata:
-      labels:                   # Метки, которые будут "приклеены" к каждому созданному поду
-        app: factory-web        # Важно: эта метка должна совпадать с selector выше
-    spec:                       # Описание внутренностей пода (какие контейнеры запускать)
-      containers:               # Список контейнеров внутри пода (обычно один)
-      - name: web-app           # Имя конкретного контейнера
-        image: python:3.9-slim  # Образ из Docker Hub (легкая версия Python)
-        # Команда ниже заставляет контейнер не закрываться, а крутить пустой цикл:
-        command: ["/bin/sh", "-c", "while true; do sleep 30; done"]
-        ports:
-        - containerPort: 8000   # Порт, который приложение "слушает" внутри контейнера
-        env:                    # Переменные окружения (настройки для твоего кода)
-        - name: REDIS_HOST      # Имя переменной, которую увидит Python-код
-          value: "redis-service" # ЗНАЧЕНИЕ: это DNS-имя нашего Сервиса из файла redis-service.yaml
-        - name: REDIS_PORT      # Порт для подключения к базе
-          value: "6379"
+      labels:
+        app: ai-worker
+    spec:
+      containers:
+      - name: python-worker
+        image: ai-worker:v1
+        imagePullPolicy: Never
+        env:
+        - name: REDIS_HOST
+          value: "redis-service"
+        - name: PYTHONUNBUFFERED
+          value: "1"

@@ -1,12 +1,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: redis-service       # Это имя будет использоваться как хост (адрес)
+  name: redis-service
 spec:
   selector:
-    app: redis              # Сервис ищет Поды с такой же меткой из Deployment
+    app: redis
   ports:
     - protocol: TCP
-      port: 6379            # Порт СЕРВИСА (куда мы стучимся)
-      targetPort: 6379      # Порт ВНУТРИ ПОДА (куда перенаправить трафик)
-  type: ClusterIP           # Внутренний адрес, виден только внутри K8s
+      port: 6379
+      targetPort: 6379
